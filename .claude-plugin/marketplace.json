@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "openeconai",
+  "description": "Official OpenEcon.ai tools for economics research, writing, and review.",
+  "owner": {
+    "name": "OpenEcon.ai",
+    "email": "hanlulong@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "econ-review",
+      "displayName": "Econ Review",
+      "description": "Produce a rigorous, source-grounded referee report and prioritized revision plan for an economics paper.",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/hanlulong/econ-paper-review-skill.git",
+        "path": "econ-review",
+        "ref": "econ-review--v0.2.0"
+      },
+            "author": {
+                "name": "Lu Han",
+                "email": "hanlulong@gmail.com"
+            },
+      "homepage": "https://openecon.ai",
+      "repository": "https://github.com/hanlulong/econ-paper-review-skill",
+      "license": "PolyForm-Noncommercial-1.0.0",
+      "category": "research",
+      "tags": [
+        "economics",
+        "paper-review",
+        "referee-report"
+      ]
+    },
+    {
+      "name": "econ-write",
+      "displayName": "Econ Write",
+      "description": "Write, edit, restructure, and audit economics papers using field-aware guidance from leading economists.",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/hanlulong/econ-writing-skill.git",
+        "ref": "econ-write--v0.1.0"
+      },
+      "author": {
+        "name": "Lu Han",
+        "email": "hanlulong@gmail.com"
+      },
+      "homepage": "https://openecon.ai",
+      "repository": "https://github.com/hanlulong/econ-writing-skill",
+      "license": "MIT",
+      "category": "research",
+      "tags": [
+        "economics",
+        "academic-writing",
+        "research"
+      ]
+    }
+  ]
+}

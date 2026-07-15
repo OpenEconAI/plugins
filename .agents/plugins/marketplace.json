@@ -1,0 +1,35 @@
+{
+  "name": "openeconai",
+  "interface": {
+    "displayName": "OpenEcon.ai"
+  },
+  "plugins": [
+    {
+      "name": "econ-review",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/hanlulong/econ-paper-review-skill.git",
+        "path": "econ-review",
+        "ref": "econ-review--v0.2.0"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Education & Research"
+    },
+    {
+      "name": "econ-write",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/hanlulong/econ-writing-skill.git",
+        "ref": "econ-write--v0.1.0"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Education & Research"
+    }
+  ]
+}
