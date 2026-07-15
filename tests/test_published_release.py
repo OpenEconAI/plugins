@@ -20,7 +20,7 @@ PUBLISHED_MARKETPLACE = os.environ.get(
 )
 CHECK_SOURCES = os.environ.get("OPENECONAI_CHECK_PUBLISHED_SOURCES") == "1"
 CHECK_INSTALLS = os.environ.get("OPENECONAI_CHECK_PUBLISHED_INSTALLS") == "1"
-EXPECTED_VERSIONS = {"econ-review": "0.2.1", "econ-write": "0.1.1"}
+EXPECTED_VERSIONS = {"econ-review": "0.2.2", "econ-write": "0.1.2"}
 
 
 def load_json(path: Path) -> dict:

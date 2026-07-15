@@ -17,12 +17,12 @@ EXPECTED_SOURCES = {
         "source": "git-subdir",
         "url": "https://github.com/hanlulong/econ-paper-review-skill.git",
         "path": "econ-review",
-        "ref": "econ-review--v0.2.1",
+        "ref": "econ-review--v0.2.2",
     },
     "econ-write": {
         "source": "url",
         "url": "https://github.com/hanlulong/econ-writing-skill.git",
-        "ref": "econ-write--v0.1.1",
+        "ref": "econ-write--v0.1.2",
     },
 }
 
