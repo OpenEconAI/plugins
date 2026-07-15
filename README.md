@@ -3,64 +3,64 @@
 The official OpenEcon.ai marketplace for economics research tools. One catalog
 provides native installation and updates for Claude Code and Codex.
 
-## Add the marketplace
+## Install or update
+
+Paste the prompt for the plugin you want into Codex or Claude Code. Your agent
+will follow the current installation contract, handle migration and updates,
+and verify the result without asking you to run commands.
+
+### Econ Review
+
+```text
+Install or update Econ Review. Read and follow the complete instructions at
+https://github.com/hanlulong/econ-paper-review-skill/blob/main/INSTALL.md.
+Handle the entire installation and verification yourself; do not ask me to run
+commands. Report completion or the one genuine blocker.
+```
+
+### Econ Write
+
+```text
+Install or update Econ Write for me. Read and follow the complete agent
+instructions at https://github.com/hanlulong/econ-writing-skill/blob/main/INSTALL.md.
+Handle every step yourself, including migration and verification. Do not ask me
+to run commands. Finish with a concise result.
+```
+
+Each prompt also performs future updates. Econ Review reuses compatible,
+verified support state.
+
+<details>
+<summary>Direct plugin commands</summary>
+
+Add the shared marketplace once.
 
 Claude Code:
 
 ```text
 /plugin marketplace add OpenEconAI/plugins
-```
-
-Or from a terminal:
-
-```bash
-claude plugin marketplace add OpenEconAI/plugins
+/plugin install econ-review@openeconai
+/plugin install econ-write@openeconai
 ```
 
 Codex:
 
 ```bash
 codex plugin marketplace add OpenEconAI/plugins
-```
-
-## Install a plugin
-
-### Econ Review
-
-```text
-/plugin install econ-review@openeconai
-```
-
-```bash
 codex plugin add econ-review@openeconai
-```
-
-### Econ Write
-
-```text
-/plugin install econ-write@openeconai
-```
-
-```bash
 codex plugin add econ-write@openeconai
 ```
 
-Econ Write is ready when the plugin is loaded. Econ Review bundles its complete
-first-party workflow, setup tool, and verified Review Desk. It does not bundle
-a Python interpreter, third-party Python packages, or Poppler. After installing
-Econ Review, paste this into your assistant:
+Native plugin clients cannot run Econ Review's machine setup automatically at
+install time. After a direct Econ Review install, send the agent:
 
 ```text
-Use econ-review-setup to finish setup on this machine. Show me the dry run, then
-prepare its private user-level Python runtime and Review Desk. Check PDF support.
-Do not install system packages; if Poppler is missing, report the options and
-wait for separate instructions.
+Run econ-review-setup now and finish its user-level setup with Review Desk.
 ```
 
-Running setup after reviewing the dry run may download the version-constrained
-Python dependencies. Poppler installation remains a separate user decision.
+Econ Write is ready after the client loads the plugin.
 
-## Update
+For direct updates:
 
 Claude Code:
 
@@ -77,6 +77,8 @@ codex plugin marketplace upgrade openeconai
 codex plugin add econ-review@openeconai
 codex plugin add econ-write@openeconai
 ```
+
+</details>
 
 ## Source and licensing
 
