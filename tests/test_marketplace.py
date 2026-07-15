@@ -17,12 +17,12 @@ EXPECTED_SOURCES = {
         "source": "git-subdir",
         "url": "https://github.com/hanlulong/econ-paper-review-skill.git",
         "path": "econ-review",
-        "ref": "econ-review--v0.2.0",
+        "ref": "econ-review--v0.2.1",
     },
     "econ-write": {
         "source": "url",
         "url": "https://github.com/hanlulong/econ-writing-skill.git",
-        "ref": "econ-write--v0.1.0",
+        "ref": "econ-write--v0.1.1",
     },
 }
 
@@ -116,6 +116,27 @@ class MarketplaceTests(unittest.TestCase):
             self.assertIn(selector, readme)
         self.assertIn("OpenEconAI/plugins", readme)
         self.assertNotIn("@econ-paper-review", readme)
+
+        install_section = readme.split("## Install or update", 1)[1].split(
+            "## Source and licensing", 1
+        )[0]
+        self.assertIn(
+            "github.com/hanlulong/econ-paper-review-skill/blob/main/INSTALL.md",
+            install_section,
+        )
+        self.assertIn(
+            "github.com/hanlulong/econ-writing-skill/blob/main/INSTALL.md",
+            install_section,
+        )
+        self.assertIn("without asking you to run commands", install_section)
+        self.assertIn(
+            "Run econ-review-setup now and finish its user-level setup with Review Desk.",
+            install_section,
+        )
+        self.assertLess(
+            install_section.index("Install or update Econ Review"),
+            install_section.index("/plugin marketplace add OpenEconAI/plugins"),
+        )
 
     def test_catalog_contains_no_embedded_plugin_payload(self) -> None:
         self.assertFalse((ROOT / "econ-review").exists())
