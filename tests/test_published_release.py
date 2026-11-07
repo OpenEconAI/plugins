@@ -11,6 +11,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
+# unittest discover puts tests/ on sys.path; this binds the dict, not a TestCase.
+from test_marketplace import EXPECTED_SKILLS
+
 
 ROOT = Path(__file__).resolve().parents[1]
 CLAUDE_MANIFEST = ROOT / ".claude-plugin" / "marketplace.json"
@@ -34,10 +37,10 @@ LOCAL_SOURCES = os.environ.get("OPENECONAI_LOCAL_SOURCES", "")
 # standalone prompt from the catalog's main branch.
 HELD_PLUGINS = {"econ-write"}
 EXPECTED_VERSIONS = {
-    "econ-review": "0.3.0",
+    "econ-review": "0.3.1",
     "econ-write": "0.1.2",
-    "econ-slides": "0.2.0",
-    "matlab-plot-skill": "0.2.0",
+    "econ-slides": "0.3.0",
+    "matlab-plot-skill": "0.2.1",
 }
 
 
@@ -177,6 +180,46 @@ def assert_plugin_root_matches_entry(test: unittest.TestCase, plugin: dict, plug
     )
 
 
+def skill_name(skill_file: Path) -> str:
+    """Return the `name:` from a SKILL.md's leading `---` frontmatter block."""
+    lines = skill_file.read_text(encoding="utf-8").splitlines()
+    if not lines or lines[0].strip() != "---":
+        raise AssertionError(f"{skill_file} has no frontmatter")
+    for line in lines[1:]:
+        if line.strip() == "---":
+            break
+        if line.startswith("name:"):
+            return line[len("name:") :].strip().strip("\"'")
+    raise AssertionError(f"{skill_file} has no name in its frontmatter")
+
+
+def skill_names(plugin_root: Path, manifest: dict) -> set[str]:
+    """Return the names of the skills under a plugin manifest's `skills` paths."""
+    paths = manifest.get("skills", "./skills/")
+    if isinstance(paths, str):
+        paths = [paths]
+    names = set()
+    for path in paths:
+        directory = plugin_root / path
+        if (directory / "SKILL.md").is_file():
+            skill_files = [directory / "SKILL.md"]
+        else:
+            skill_files = sorted(directory.glob("*/SKILL.md"))
+        names.update(skill_name(skill_file) for skill_file in skill_files)
+    return names
+
+
+def assert_ships_expected_skills(
+    test: unittest.TestCase, name: str, plugin_root: Path, manifest_dir: str
+) -> None:
+    manifest = load_json(plugin_root / manifest_dir / "plugin.json")
+    test.assertEqual(
+        skill_names(plugin_root, manifest),
+        set(EXPECTED_SKILLS[name]),
+        f"the skills in {plugin_root} ({manifest_dir}) differ from EXPECTED_SKILLS[{name!r}]",
+    )
+
+
 def assert_prompt_matches_source(
     test: unittest.TestCase, readme: str, plugin: dict, source_readme: str, where: str
 ) -> None:
@@ -211,9 +254,12 @@ def local_tag_commit(git: str, checkout: Path, ref: str) -> str:
 class PublishedSourceTests(unittest.TestCase):
     def test_pinned_tags_peel_to_the_pinned_sha_and_manifests_match(self) -> None:
         git = require_executable("git")
+        claude = shutil.which("claude")
         marketplace = load_json(CLAUDE_MANIFEST)
 
         with tempfile.TemporaryDirectory(prefix="openeconai-source-check-") as temp_root:
+            validate_env = git_env()
+            validate_env["CLAUDE_CONFIG_DIR"] = str(Path(temp_root) / "claude-config")
             for plugin in marketplace["plugins"]:
                 name = plugin["name"]
                 source = plugin["source"]
@@ -244,7 +290,17 @@ class PublishedSourceTests(unittest.TestCase):
                     )
                     head = run([git, "-C", str(checkout), "rev-parse", "HEAD"]).stdout.strip()
                     self.assertEqual(head, expected)
-                    assert_plugin_root_matches_entry(self, plugin, checkout / source.get("path", ""))
+                    plugin_root = checkout / source.get("path", "")
+                    assert_plugin_root_matches_entry(self, plugin, plugin_root)
+                    for manifest_dir in (".claude-plugin", ".codex-plugin"):
+                        assert_ships_expected_skills(self, name, plugin_root, manifest_dir)
+                    # Not every source repository validates its plugin in CI, so
+                    # validate each pinned tree here. Without --strict, warnings
+                    # pass and only errors fail.
+                    with self.subTest(plugin=name, check="claude plugin validate"):
+                        if claude is None:
+                            self.skipTest("claude is not installed")
+                        run([claude, "plugin", "validate", str(plugin_root)], env=validate_env)
 
     def test_standalone_prompts_match_source_readmes(self) -> None:
         git = require_executable("git")
@@ -370,6 +426,15 @@ class PublishedInstallTests(unittest.TestCase):
                     for name, version in EXPECTED_VERSIONS.items()
                 },
             )
+            install_paths = {entry["id"]: entry.get("installPath") for entry in installed}
+            for name in EXPECTED_VERSIONS:
+                with self.subTest(plugin=name, check="installed skills"):
+                    install_path = install_paths.get(f"{name}@openeconai")
+                    self.assertTrue(
+                        install_path,
+                        f"`claude plugin list --json` reports no installPath for {name}@openeconai",
+                    )
+                    assert_ships_expected_skills(self, name, Path(install_path), ".claude-plugin")
             # The right version from the wrong commit would pass the check
             # above, so compare the commit Claude Code recorded for each install.
             records = load_json(Path(config_dir) / "plugins" / "installed_plugins.json")
@@ -413,13 +478,24 @@ class PublishedInstallTests(unittest.TestCase):
                 {entry["name"] for entry in listing["available"]},
                 set(EXPECTED_VERSIONS),
             )
-            for name in EXPECTED_VERSIONS:
-                run([codex, "plugin", "add", f"{name}@openeconai", "--json"], env=env)
+            added = {
+                name: json.loads(
+                    run([codex, "plugin", "add", f"{name}@openeconai", "--json"], env=env).stdout
+                )
+                for name in EXPECTED_VERSIONS
+            }
             installed = json.loads(run([codex, "plugin", "list", "--json"], env=env).stdout)
             installed_versions = {
                 entry["name"]: entry["version"] for entry in installed["installed"]
             }
             self.assertEqual(installed_versions, EXPECTED_VERSIONS)
+            for name, result in added.items():
+                with self.subTest(plugin=name, check="installed skills"):
+                    # Read the path Codex reports; never guess its cache layout.
+                    installed_path = result.get("installedPath")
+                    if not installed_path:
+                        self.skipTest(f"`codex plugin add --json` reports no installedPath for {name}")
+                    assert_ships_expected_skills(self, name, Path(installed_path), ".codex-plugin")
 
 
 if __name__ == "__main__":

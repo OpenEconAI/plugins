@@ -26,8 +26,9 @@ jobs:
         run: |
           python -m json.tool .claude-plugin/marketplace.json > /dev/null
           python -m json.tool .agents/plugins/marketplace.json > /dev/null
-      # The published-source and install checks are opt-in and skip here, so
-      # this job needs no network access beyond the checkout.
+      # The published-source checks run in the published-sources job and the
+      # install checks are opt-in, so both skip here and this job needs no
+      # network access beyond the checkout.
       - name: Run the offline catalog tests
         run: python -m unittest discover -s tests -v
 
@@ -42,3 +43,19 @@ jobs:
           node-version: "22"
       - name: Validate the Claude Code marketplace
         run: npx --yes @anthropic-ai/claude-code@2.1.319 plugin validate . --strict
+
+  published-sources:
+    name: Published sources
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.x"
+      # Every pinned tag must be on GitHub and peel to the pinned sha, so a
+      # pin PR fails here until its source tags are pushed.
+      - name: Check the pinned source releases on GitHub
+        env:
+          OPENECONAI_CHECK_PUBLISHED_SOURCES: "1"
+          OPENECONAI_REQUIRE_PUBLISHED_TAGS: "1"
+        run: python -m unittest discover -s tests -p 'test_published_release.py' -v

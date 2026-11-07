@@ -10,8 +10,8 @@
         "source": "git-subdir",
         "url": "https://github.com/hanlulong/econ-paper-review-skill.git",
         "path": "econ-review",
-        "ref": "econ-review--v0.3.0",
-        "sha": "29af627ae6108c18057ab1db9374a247e31376a4"
+        "ref": "econ-review--v0.3.1",
+        "sha": "a111bf0251de69e264180b0eb1dacf84b1ef0bb7"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -37,8 +37,8 @@
       "source": {
         "source": "url",
         "url": "https://github.com/hanlulong/econ-slides-skill.git",
-        "ref": "econ-slides--v0.2.0",
-        "sha": "92d58565a1abbdbac2b88c27cc5bab50b1672a93"
+        "ref": "econ-slides--v0.3.0",
+        "sha": "af1e8f91a24daefd404568fea94fffc5b419e9e3"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -51,8 +51,8 @@
       "source": {
         "source": "url",
         "url": "https://github.com/hanlulong/matlab-plot-skill.git",
-        "ref": "matlab-plot-skill--v0.2.0",
-        "sha": "79a90ecc53ffc636bb5baefa5ad8d227dccd8332"
+        "ref": "matlab-plot-skill--v0.2.1",
+        "sha": "41f636e87e78aaab382e65579fe134044bda7ab8"
       },
       "policy": {
         "installation": "AVAILABLE",

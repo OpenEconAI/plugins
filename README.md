@@ -16,16 +16,21 @@ installs and updates these plugins in Claude Code and Codex:
   app. Plugins aren't available in the Codex IDE extension; use a
   [standalone install](#standalone-install) there.
 - **git** on your `PATH`. Both clients clone the catalog with it. On macOS,
-  `xcode-select --install` provides it.
+  `xcode-select --install` provides it. With git older than 2.39 (for example
+  on Ubuntu 22.04), use Claude Code 2.1.288 or newer (run `claude update`):
+  earlier versions can fail to install Econ Review, or install an incomplete
+  copy.
 - **Econ Review:** Python 3.10 or newer with `venv` and pip. The macOS system
   `python3` is 3.9, which is too old: install Python 3.13 or 3.14 from
-  [python.org](https://www.python.org/downloads/macos/) (3.15 is not tested
-  yet), or run `brew install python@3.12` or `uv python install 3.12`. It also
-  needs [Poppler](https://poppler.freedesktop.org/) on your `PATH` for PDF input
+  [python.org](https://www.python.org/downloads/macos/) (3.15 worked in a macOS
+  test, but some dependencies do not yet ship ready-made 3.15 packages, so 3.13
+  or 3.14 is the safer choice), or run `brew install python@3.12` or
+  `uv python install 3.12`. It also needs
+  [Poppler](https://poppler.freedesktop.org/) on your `PATH` for PDF input
   (`brew install poppler`, or conda-forge). Its setup skill creates a private
   Python environment (about 80 MB) and the local Review Desk viewer, served at
-  `http://127.0.0.1:48127/`, in a support folder outside both clients. It
-  never uploads a manuscript.
+  `http://127.0.0.1:48127/`, in a support folder outside both clients. The
+  setup never uploads a manuscript.
 - **Econ Write:** nothing else.
 - **Econ Slides:** a TeX distribution with XeLaTeX (MacTeX, TeX Live, or
   MiKTeX) and Python 3.10 or newer with PyMuPDF; see its
@@ -34,6 +39,21 @@ installs and updates these plugins in Claude Code and Codex:
   `PATH` (check with `matlab -batch "disp(version)"`); see its
   [prerequisites](https://github.com/hanlulong/matlab-plot-skill#prerequisites).
   In Codex on macOS, approve the request to run `matlab` outside the sandbox.
+
+## Use one method per client
+
+In each client, install a given skill either as a plugin from this catalog or
+as a standalone copy, not both: with both, the client loads the skill twice.
+
+An earlier prompt from this page may have installed a standalone copy. Look
+for `~/.claude/skills/<name>` (Claude Code), `~/.agents/skills/<name>` or the
+older `~/.codex/skills/<name>` (Codex), or the same folders inside a project
+(`.claude/skills/<name>`, `.agents/skills/<name>`), where `<name>` is the
+plugin name, for example `econ-review`. Either keep that copy and update it by
+pasting its prompt again (see [Standalone install](#standalone-install)), or
+remove it before you install the plugin. For a linked Econ Slides copy, remove
+only the link, not the clone it points to. Removing a standalone Econ Review
+copy keeps its support data, which the plugin reuses.
 
 ## Install
 
@@ -223,11 +243,6 @@ plugins stay and keep loading, so remove them first (`codex plugin remove`
 still works after the catalog is gone). Start a new session afterwards (in
 Claude Code, `/reload-plugins` also works).
 
-## Use one method per client
-
-In each client, install a given skill either as a plugin from this catalog or
-as a standalone copy, not both.
-
 ## Standalone install
 
 Standalone copies of Econ Review, Econ Write, and MATLAB Plot keep the short
@@ -303,6 +318,16 @@ to add it. Then confirm the skill loads.
 Each source repository documents its other installation methods, updates, and
 removal.
 
+## Report a problem
+
+Report a problem with a plugin in its own repository:
+[Econ Review](https://github.com/hanlulong/econ-paper-review-skill/issues/new/choose),
+[Econ Write](https://github.com/hanlulong/econ-writing-skill/issues/new),
+[Econ Slides](https://github.com/hanlulong/econ-slides-skill/issues/new/choose),
+or [MATLAB Plot](https://github.com/hanlulong/matlab-plot-skill/issues/new/choose).
+Open an issue here only for the catalog itself, such as a broken install
+command or a wrong pin.
+
 ## Licenses
 
 Each plugin keeps the license of its source repository; this catalog does not
@@ -328,11 +353,11 @@ The [changelog](CHANGELOG.md) lists the pins in every catalog release. To stay
 on one catalog release, add the marketplace at its tag:
 
 ```text
-/plugin marketplace add OpenEconAI/plugins#v0.1.3
+/plugin marketplace add OpenEconAI/plugins#v0.1.4
 ```
 
 ```bash
-codex plugin marketplace add OpenEconAI/plugins --ref v0.1.3
+codex plugin marketplace add OpenEconAI/plugins --ref v0.1.4
 ```
 
 If you already added `openeconai` without a tag, both clients refuse to add it
@@ -344,64 +369,4 @@ data is kept.
 
 ## Maintainer release checks
 
-To release a plugin through the catalog, update its `ref` and `sha` in both
-`.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json`. The
-`sha` is the full commit the tag peels to. Once the tag is pushed, run
-`git ls-remote <url> 'refs/tags/<ref>' 'refs/tags/<ref>^{}'` and take the
-`^{}` line (an annotated tag) or else the only line (a lightweight tag). Before
-then, `git rev-parse HEAD` in the source clone gives it only if the tag will go
-on that exact commit. A tag on a squash or merge commit points to a commit
-that does not exist yet, so pin the branch tip for the checks below and
-replace the `sha` once the tag is pushed. Get the pin right before users
-install it: Claude Code does not update an installed plugin whose version is
-unchanged, so a corrected `sha` with the same version never reaches them.
-
-Copy the `description` and `license` from the pinned commit's
-`.claude-plugin/plugin.json` into the Claude entry (and a summary into the
-table at the top), and copy the plugin's standalone prompt from its README
-into **Standalone install**. Then update `EXPECTED_SOURCES` in
-`tests/test_marketplace.py` and `EXPECTED_VERSIONS` in
-`tests/test_published_release.py`. Bump the catalog `version` in
-`.claude-plugin/marketplace.json` and in the pin examples under **Versions**,
-add a dated heading for it to the changelog, and tag the catalog's merge commit
-as `vX.Y.Z`; plugin tags use `<plugin>--vX.Y.Z`.
-
-Run the offline catalog and schema checks before every release:
-
-```bash
-python3 -m unittest discover -s tests -v
-claude plugin validate . --strict
-```
-
-Before the plugin tags are published, check the catalog against local clones
-of the source repositories. Put each clone, checked out at the commit you will
-tag, in one folder under its repository name (`econ-paper-review-skill`,
-`econ-writing-skill`, `econ-slides-skill`, `matlab-plot-skill`). The check
-requires each clone's `HEAD` to be the pinned `sha`, or, for a pin on a squash
-or merge commit, a fetched local tag that peels to the `sha` and has the same
-tree as `HEAD`. It then compares the plugin manifests and README at that
-commit, not the working tree, with the catalog entry and the standalone
-prompts above:
-
-```bash
-OPENECONAI_LOCAL_SOURCES=/path/to/folder-with-clones \
-  python3 -m unittest discover -s tests -p 'test_published_release.py' -v
-```
-
-After publishing the pinned plugin tags, run the same checks against GitHub.
-Each tag must peel to the pinned `sha`, and the manifests and README at the tag
-must match. A tag that is not on GitHub yet is reported as skipped;
-`OPENECONAI_REQUIRE_PUBLISHED_TAGS=1` makes it fail instead, so use it for the
-final run:
-
-```bash
-OPENECONAI_CHECK_PUBLISHED_SOURCES=1 OPENECONAI_REQUIRE_PUBLISHED_TAGS=1 \
-  python3 -m unittest discover -s tests -p 'test_published_release.py' -v
-```
-
-After publishing this catalog, exercise clean installations with both clients:
-
-```bash
-OPENECONAI_CHECK_PUBLISHED_INSTALLS=1 \
-  python3 -m unittest discover -s tests -p 'test_published_release.py' -v
-```
+Maintainers: see [RELEASING.md](RELEASING.md).
