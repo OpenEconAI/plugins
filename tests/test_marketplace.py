@@ -20,8 +20,8 @@ EXPECTED_SOURCES = {
         "source": "git-subdir",
         "url": "https://github.com/hanlulong/econ-paper-review-skill.git",
         "path": "econ-review",
-        "ref": "econ-review--v0.3.1",
-        "sha": "a111bf0251de69e264180b0eb1dacf84b1ef0bb7",
+        "ref": "econ-review--v0.3.2",
+        "sha": "45ba85019cafb77988eaf01401a2841590f287f6",
     },
     "econ-write": {
         "source": "url",
@@ -31,14 +31,14 @@ EXPECTED_SOURCES = {
     "econ-slides": {
         "source": "url",
         "url": "https://github.com/hanlulong/econ-slides-skill.git",
-        "ref": "econ-slides--v0.3.0",
-        "sha": "af1e8f91a24daefd404568fea94fffc5b419e9e3",
+        "ref": "econ-slides--v0.3.1",
+        "sha": "bddba13fe0f8c68c14580020a4cd4bad8caacead",
     },
     "matlab-plot-skill": {
         "source": "url",
         "url": "https://github.com/hanlulong/matlab-plot-skill.git",
-        "ref": "matlab-plot-skill--v0.2.1",
-        "sha": "41f636e87e78aaab382e65579fe134044bda7ab8",
+        "ref": "matlab-plot-skill--v0.2.2",
+        "sha": "723f4473b30400c8c0ba68f76ed82f229ef8d48c",
     },
 }
 # The skills each pinned plugin ships, by plugin. The README's skills table and
