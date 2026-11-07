@@ -1,7 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "openeconai",
-  "description": "Official OpenEcon.ai tools for economics research, writing, and review.",
+  "version": "0.1.3",
+  "description": "Official OpenEcon.ai tools for economics research, writing, review, presentations, and figures.",
   "owner": {
     "name": "OpenEcon.ai",
     "email": "hanlulong@gmail.com"
@@ -15,7 +16,8 @@
         "source": "git-subdir",
         "url": "https://github.com/hanlulong/econ-paper-review-skill.git",
         "path": "econ-review",
-        "ref": "econ-review--v0.2.2"
+        "ref": "econ-review--v0.3.0",
+        "sha": "29af627ae6108c18057ab1db9374a247e31376a4"
       },
       "author": {
         "name": "Lu Han",
@@ -52,6 +54,54 @@
         "economics",
         "academic-writing",
         "research"
+      ]
+    },
+    {
+      "name": "econ-slides",
+      "displayName": "Econ Slides",
+      "description": "Build economics research talks in LaTeX/Beamer: paper-to-talk decks, discussant slides, timed speaker scripts, and edits to existing Beamer decks, each compiled and checked before delivery. Not for PowerPoint or Google Slides.",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/hanlulong/econ-slides-skill.git",
+        "ref": "econ-slides--v0.2.0",
+        "sha": "92d58565a1abbdbac2b88c27cc5bab50b1672a93"
+      },
+      "author": {
+        "name": "Lu Han",
+        "email": "hanlulong@gmail.com"
+      },
+      "homepage": "https://openecon.ai",
+      "repository": "https://github.com/hanlulong/econ-slides-skill",
+      "license": "MIT",
+      "category": "research",
+      "tags": [
+        "economics",
+        "beamer",
+        "slides"
+      ]
+    },
+    {
+      "name": "matlab-plot-skill",
+      "displayName": "MATLAB Plot",
+      "description": "Create, clean up, and export publication-quality MATLAB figures for papers, LaTeX or Overleaf, and Beamer slides: run MATLAB, read the rendered figure, and iterate until the layout is clean.",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/hanlulong/matlab-plot-skill.git",
+        "ref": "matlab-plot-skill--v0.2.0",
+        "sha": "79a90ecc53ffc636bb5baefa5ad8d227dccd8332"
+      },
+      "author": {
+        "name": "Lu Han",
+        "email": "hanlulong@gmail.com"
+      },
+      "homepage": "https://github.com/hanlulong/matlab-plot-skill",
+      "repository": "https://github.com/hanlulong/matlab-plot-skill",
+      "license": "MIT",
+      "category": "research",
+      "tags": [
+        "matlab",
+        "figures",
+        "latex"
       ]
     }
   ]
