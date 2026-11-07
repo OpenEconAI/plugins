@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "openeconai",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Official OpenEcon.ai tools for economics research, writing, review, presentations, and figures.",
   "owner": {
     "name": "OpenEcon.ai",
@@ -16,8 +16,8 @@
         "source": "git-subdir",
         "url": "https://github.com/hanlulong/econ-paper-review-skill.git",
         "path": "econ-review",
-        "ref": "econ-review--v0.3.2",
-        "sha": "45ba85019cafb77988eaf01401a2841590f287f6"
+        "ref": "econ-review--v0.3.3",
+        "sha": "f606772b0fd5257883fb4d2ef0fbea4faff0e023"
       },
       "author": {
         "name": "Lu Han",

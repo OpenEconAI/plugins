@@ -353,11 +353,11 @@ The [changelog](CHANGELOG.md) lists the pins in every catalog release. To stay
 on one catalog release, add the marketplace at its tag:
 
 ```text
-/plugin marketplace add OpenEconAI/plugins#v0.1.5
+/plugin marketplace add OpenEconAI/plugins#v0.1.6
 ```
 
 ```bash
-codex plugin marketplace add OpenEconAI/plugins --ref v0.1.5
+codex plugin marketplace add OpenEconAI/plugins --ref v0.1.6
 ```
 
 If you already added `openeconai` without a tag, both clients refuse to add it
