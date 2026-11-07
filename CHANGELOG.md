@@ -4,6 +4,19 @@ Notable changes to the OpenEcon.ai plugin catalog. Catalog releases are tagged
 `vX.Y.Z`. Each entry lists the plugin release tags that the catalog pins; plugin
 tags use `<plugin>--vX.Y.Z`.
 
+## v0.1.5 - 2026-11-07
+
+Pins:
+
+- `econ-review--v0.3.2` (was `econ-review--v0.3.1`)
+- `econ-write--v0.1.2` (unchanged)
+- `econ-slides--v0.3.1` (was `econ-slides--v0.3.0`)
+- `matlab-plot-skill--v0.2.2` (was `matlab-plot-skill--v0.2.1`)
+
+Each new pin has the full commit its tag points to as its `sha`, in both
+manifests. The descriptions, the licenses, and the standalone prompts match
+the pinned releases unchanged.
+
 ## v0.1.4 - 2026-11-07
 
 Pins:

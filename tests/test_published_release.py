@@ -37,10 +37,10 @@ LOCAL_SOURCES = os.environ.get("OPENECONAI_LOCAL_SOURCES", "")
 # standalone prompt from the catalog's main branch.
 HELD_PLUGINS = {"econ-write"}
 EXPECTED_VERSIONS = {
-    "econ-review": "0.3.1",
+    "econ-review": "0.3.2",
     "econ-write": "0.1.2",
-    "econ-slides": "0.3.0",
-    "matlab-plot-skill": "0.2.1",
+    "econ-slides": "0.3.1",
+    "matlab-plot-skill": "0.2.2",
 }
 
 
