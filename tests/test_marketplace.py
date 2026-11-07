@@ -20,8 +20,8 @@ EXPECTED_SOURCES = {
         "source": "git-subdir",
         "url": "https://github.com/hanlulong/econ-paper-review-skill.git",
         "path": "econ-review",
-        "ref": "econ-review--v0.3.0",
-        "sha": "29af627ae6108c18057ab1db9374a247e31376a4",
+        "ref": "econ-review--v0.3.1",
+        "sha": "a111bf0251de69e264180b0eb1dacf84b1ef0bb7",
     },
     "econ-write": {
         "source": "url",
@@ -31,15 +31,23 @@ EXPECTED_SOURCES = {
     "econ-slides": {
         "source": "url",
         "url": "https://github.com/hanlulong/econ-slides-skill.git",
-        "ref": "econ-slides--v0.2.0",
-        "sha": "92d58565a1abbdbac2b88c27cc5bab50b1672a93",
+        "ref": "econ-slides--v0.3.0",
+        "sha": "af1e8f91a24daefd404568fea94fffc5b419e9e3",
     },
     "matlab-plot-skill": {
         "source": "url",
         "url": "https://github.com/hanlulong/matlab-plot-skill.git",
-        "ref": "matlab-plot-skill--v0.2.0",
-        "sha": "79a90ecc53ffc636bb5baefa5ad8d227dccd8332",
+        "ref": "matlab-plot-skill--v0.2.1",
+        "sha": "41f636e87e78aaab382e65579fe134044bda7ab8",
     },
+}
+# The skills each pinned plugin ships, by plugin. The README's skills table and
+# the published-release checks both read this.
+EXPECTED_SKILLS = {
+    "econ-review": ["econ-review", "econ-review-setup"],
+    "econ-write": ["econ-write"],
+    "econ-slides": ["econ-slides"],
+    "matlab-plot-skill": ["matlab-plot-skill"],
 }
 LICENSE_LABELS = {
     "MIT": "MIT",
@@ -182,7 +190,20 @@ class MarketplaceTests(unittest.TestCase):
         self.assertIn("Enable auto-update", markdown_section(readme, "## Update"))
         self.assertIn("**Update marketplace**", markdown_section(readme, "## Update"))
         self.assertIn("outside the sandbox", markdown_section(readme, "### Finish setup"))
-        self.assertIn("not both", markdown_section(readme, "## Use one method per client"))
+        one_method = markdown_section(readme, "## Use one method per client")
+        self.assertIn("not both", one_method)
+        # The warning comes before the install commands, and names every place
+        # an earlier standalone prompt may have put a copy.
+        self.assertLess(
+            readme.index("\n## Before you start\n"),
+            readme.index("\n## Use one method per client\n"),
+        )
+        self.assertLess(
+            readme.index("\n## Use one method per client\n"), readme.index("\n## Install\n")
+        )
+        for folder in ("~/.claude/skills/", "~/.agents/skills/", "~/.codex/skills/"):
+            with self.subTest(folder=folder):
+                self.assertIn(folder, one_method)
 
         self.assertIn(
             "github.com/hanlulong/econ-paper-review-skill/blob/main/INSTALL.md",
@@ -210,10 +231,17 @@ class MarketplaceTests(unittest.TestCase):
             "Poppler",
             "XeLaTeX",
             "MATLAB R2021a or newer",
-            # Econ Review 0.3.0 names tested Python versions; an unversioned
-            # `brew install python` now installs the untested 3.15.
-            "3.15 is not tested yet",
+            # Econ Review 0.3.1 recommends 3.13 or 3.14; an unversioned
+            # `brew install python` now installs 3.15, for which some
+            # dependencies ship no ready-made packages yet.
+            "some dependencies do not yet ship ready-made 3.15 packages",
             "`brew install python@3.12`",
+            # Claude Code before 2.1.288 can fail to install the git-subdir
+            # Econ Review entry with git older than 2.39.
+            "2.1.288 or newer",
+            # Econ Review has an opt-in PDF service, so the claim covers the
+            # setup only, as Econ Review's README does.
+            "The setup never uploads a manuscript.",
         ):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, before)
@@ -335,6 +363,45 @@ class MarketplaceTests(unittest.TestCase):
         self.assertEqual(set(re.findall(r"\bv\d+\.\d+\.\d+\b", versions)), {tag})
         # Re-adding an unpinned catalog at a tag fails until it is removed.
         self.assertIn("remove it first", versions)
+
+    def test_skills_table_lists_every_skill(self) -> None:
+        self.assertEqual(set(EXPECTED_SKILLS), set(PLUGIN_NAMES))
+        section = markdown_section(README.read_text(encoding="utf-8"), "### Use the skills")
+        expected = {
+            f"{plugin}:{skill}" for plugin, skills in EXPECTED_SKILLS.items() for skill in skills
+        }
+        self.assertEqual(set(re.findall(r"`/([a-z0-9-]+:[a-z0-9-]+)`", section)), expected)
+        self.assertEqual(set(re.findall(r"`\$([a-z0-9-]+:[a-z0-9-]+)`", section)), expected)
+
+    def test_problem_reports_go_to_each_plugin_repository(self) -> None:
+        readme = README.read_text(encoding="utf-8")
+        config = (ROOT / ".github" / "ISSUE_TEMPLATE" / "config.yml").read_text(encoding="utf-8")
+        # Blank issues stay available for problems with the catalog itself.
+        self.assertRegex(config, r"(?m)^blank_issues_enabled: true$")
+        self.assertLess(readme.index("\n## Report a problem\n"), readme.index("\n## Licenses\n"))
+        report = markdown_section(readme, "## Report a problem")
+        config_urls = re.findall(r"^\s+url: (\S+)$", config, flags=re.M)
+        readme_urls = re.findall(r"\]\((https://[^)\s]+)\)", report)
+        self.assertEqual(config_urls, readme_urls)
+        self.assertEqual(len(config_urls), len(self.claude["plugins"]))
+        for plugin in self.claude["plugins"]:
+            with self.subTest(plugin=plugin["name"]):
+                new_issue = f"{plugin['repository']}/issues/new"
+                links = [url for url in config_urls if url.startswith(f"{plugin['repository']}/")]
+                self.assertEqual(len(links), 1)
+                self.assertIn(links[0], (new_issue, f"{new_issue}/choose"))
+
+    def test_release_checks_live_in_releasing_md(self) -> None:
+        readme = README.read_text(encoding="utf-8")
+        releasing = (ROOT / "RELEASING.md").read_text(encoding="utf-8")
+        self.assertIn(
+            "[RELEASING.md](RELEASING.md)",
+            markdown_section(readme, "## Maintainer release checks"),
+        )
+        self.assertTrue(releasing.startswith("# Releasing the catalog\n"))
+        self.assertIn("OPENECONAI_REQUIRE_PUBLISHED_TAGS=1", releasing)
+        self.assertIn("`EXPECTED_SKILLS`", releasing)
+        self.assertNotIn("OPENECONAI_", readme)
 
     def test_catalog_contains_no_embedded_plugin_payload(self) -> None:
         for name in PLUGIN_NAMES:

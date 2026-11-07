@@ -4,6 +4,45 @@ Notable changes to the OpenEcon.ai plugin catalog. Catalog releases are tagged
 `vX.Y.Z`. Each entry lists the plugin release tags that the catalog pins; plugin
 tags use `<plugin>--vX.Y.Z`.
 
+## v0.1.4 - 2026-11-07
+
+Pins:
+
+- `econ-review--v0.3.1` (was `econ-review--v0.3.0`)
+- `econ-write--v0.1.2` (unchanged)
+- `econ-slides--v0.3.0` (was `econ-slides--v0.2.0`)
+- `matlab-plot-skill--v0.2.1` (was `matlab-plot-skill--v0.2.0`)
+
+Each new pin has the full commit its tag points to as its `sha`, in both
+manifests. Checked with Claude Code 2.1.319 and Codex CLI 0.164.0.
+
+Added:
+
+- A CI job that checks every pinned release tag on GitHub.
+- Tests check that each pinned plugin passes `claude plugin validate` and
+  ships the expected skills, and that the skills table lists every skill.
+- A "Report a problem" README section and a new-issue page that link to each
+  plugin's own repository. Blank issues stay available for the catalog itself.
+
+Changed:
+
+- "Use one method per client" moves before Install. It says that a skill
+  installed both ways loads twice, where to find a standalone copy that an
+  earlier prompt installed (including the older `~/.codex/skills` folder),
+  and whether to keep it or remove it.
+- The git prerequisite says to use Claude Code 2.1.288 or newer with git
+  older than 2.39, because earlier versions can fail to install Econ Review or
+  install an incomplete copy.
+- The Econ Review prerequisites now say that the setup never uploads a
+  manuscript, as Econ Review's README does.
+- The Econ Review prerequisites follow Econ Review 0.3.1 on Python 3.15: it
+  worked in a macOS test, but 3.13 or 3.14 is the safer choice.
+- The Econ Review entry's description is copied from its 0.3.1 manifest: run
+  econ-review-setup after each plugin update, as well as after a direct
+  install. The other descriptions, the licenses, and the standalone prompts
+  match the pinned releases unchanged.
+- The maintainer release checks move from the README to `RELEASING.md`.
+
 ## v0.1.3 - 2026-11-07
 
 Pins:

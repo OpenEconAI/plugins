@@ -1,0 +1,17 @@
+# A problem with a plugin belongs in its source repository: GitHub cannot
+# transfer an issue from this organization to those repositories. Blank issues
+# stay on for problems with the catalog itself.
+blank_issues_enabled: true
+contact_links:
+  - name: Problem with Econ Review
+    url: https://github.com/hanlulong/econ-paper-review-skill/issues/new/choose
+    about: Report a bad or missed comment, or another Econ Review problem, in its own repository.
+  - name: Problem with Econ Write
+    url: https://github.com/hanlulong/econ-writing-skill/issues/new
+    about: Report an Econ Write problem in its own repository.
+  - name: Problem with Econ Slides
+    url: https://github.com/hanlulong/econ-slides-skill/issues/new/choose
+    about: Report an Econ Slides problem in its own repository.
+  - name: Problem with MATLAB Plot
+    url: https://github.com/hanlulong/matlab-plot-skill/issues/new/choose
+    about: Report a MATLAB Plot problem in its own repository.
