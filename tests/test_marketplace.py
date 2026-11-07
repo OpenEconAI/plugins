@@ -20,8 +20,8 @@ EXPECTED_SOURCES = {
         "source": "git-subdir",
         "url": "https://github.com/hanlulong/econ-paper-review-skill.git",
         "path": "econ-review",
-        "ref": "econ-review--v0.3.2",
-        "sha": "45ba85019cafb77988eaf01401a2841590f287f6",
+        "ref": "econ-review--v0.3.3",
+        "sha": "f606772b0fd5257883fb4d2ef0fbea4faff0e023",
     },
     "econ-write": {
         "source": "url",
